@@ -1,0 +1,23 @@
+{
+  "name": "todo-list-management-system-backend",
+  "version": "1.0.0",
+  "description": "Todo List Management System",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Mohammed Sinan MP",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "json-2-csv": "^5.5.1",
+    "json2csv": "^6.0.0-alpha.2",
+    "mongoose": "^8.4.4",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.4"
+  }
+}
