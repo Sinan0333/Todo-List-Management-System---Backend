@@ -1,6 +1,7 @@
 import csvParser from "csv-parser";
 import { Parser } from 'json2csv';
 import fs from "fs";
+import mongoose from "mongoose";
 import TodoModel from "../Model/todoModel.js";
 
 // Get all todos
@@ -12,7 +13,6 @@ export const getAllTodo = async (req, res) => {
     }
     res.status(200).json({ data: list });
   } catch (error) {
-    console.error("Error in todoController.getAllTodo:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -21,7 +21,8 @@ export const getAllTodo = async (req, res) => {
 export const getTodo = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id) {
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Todo ID is required" });
     }
 
@@ -31,7 +32,6 @@ export const getTodo = async (req, res) => {
     }
     res.status(200).json(todo);
   } catch (error) {
-    console.error("Error in todoController.getTodo:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -48,7 +48,6 @@ export const addTodo = async (req, res) => {
     const todo = await data.save();
     res.status(201).json({ message: "Todo added successfully", todo });
   } catch (error) {
-    console.error("Error in todoController.addTodo:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -59,11 +58,11 @@ export const updateTodo = async (req, res) => {
     const { id } = req.params;
     const { description,status } = req.body;
 
-    if (!id) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Todo ID is required" });
     }
 
-    if(description && description.trim() === ""){
+    if(description !==undefined && description.trim() === ""){
       return res.status(400).json({ error: "Description cannot be empty" });
     }
 
@@ -80,12 +79,12 @@ export const updateTodo = async (req, res) => {
     }
 
     const todo = await TodoModel.findByIdAndUpdate(id, data, { new: true });
+    
     if (!todo) {
       return res.status(404).json({ error: "Todo not found" });
     }
     res.status(200).json({ message: "Todo updated successfully", todo });
   } catch (error) {
-    console.error("Error in todoController.updateTodo:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -94,7 +93,7 @@ export const updateTodo = async (req, res) => {
 export const deleteTodo = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id) {
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: "Todo ID is required" });
     }
 
@@ -104,7 +103,6 @@ export const deleteTodo = async (req, res) => {
     }
     res.status(200).json({ message: "Todo deleted successfully" });
   } catch (error) {
-    console.error("Error in todoController.deleteTodo:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -118,29 +116,48 @@ export const uploadTodo = async (req, res) => {
 
     const filePath = req.file.path;
     const results = [];
+    const expectedFields = ['description', 'status'];
+    let invalidFormat = false; // To track invalid CSV format
 
-    fs.createReadStream(filePath)
-      .pipe(csvParser())
-      .on('data', (data) => results.push(data))
-      .on('end', async () => {
-        try {
-          fs.unlinkSync(filePath);
-          const insertedTodos = await TodoModel.insertMany(results);
-          res.status(201).json({ message: 'Todos added successfully', todos: insertedTodos });
-        } catch (error) {
-          console.error('Error inserting documents:', error);
-          res.status(500).json({ error: 'Internal server error' });
-        }
-      })
-      .on('error', (error) => {
-        console.error('Error parsing CSV:', error);
+    const stream = fs.createReadStream(filePath).pipe(csvParser());
+
+    stream.on('data', (data) => {
+      // Check if the row contains the expected fields
+      const validateFields = Object.keys(data).every((field) => expectedFields.includes(field));
+      if (!validateFields) {
+        invalidFormat = true;
+        stream.destroy(); // Stop further processing
+        return;
+      }
+      results.push(data);
+    });
+
+    stream.on('end', async () => {
+      fs.unlinkSync(filePath); // Remove the uploaded file
+
+      if (invalidFormat) {
+        return res.status(400).json({ error: 'Invalid CSV format.' });
+      }
+
+      try {
+        const insertedTodos = await TodoModel.insertMany(results);
+        res.status(201).json({ message: 'Todos added successfully', todos: insertedTodos });
+      } catch (error) {
+        console.error('Error inserting documents:', error);
         res.status(500).json({ error: 'Internal server error' });
-      });
+      }
+    });
+
+    stream.on('error', (error) => {
+      console.error('Error parsing CSV:', error);
+      fs.unlinkSync(filePath); // Remove the uploaded file on error
+      res.status(500).json({ error: 'Internal server error' });
+    });
   } catch (error) {
-    console.error('Error in todoController.uploadTodo:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 // Download todos as CSV
 export const downloadTodo = async (req, res) => {
@@ -161,7 +178,6 @@ export const downloadTodo = async (req, res) => {
     res.attachment('todos.csv');
     res.status(200).send(csv);
   } catch (error) {
-    console.error('Error in todoController.downloadTodo:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -180,7 +196,6 @@ export const filterTodo = async (req, res) => {
     }
     res.status(200).json({ data: list });
   } catch (error) {
-    console.error("Error in todoController.filterTodo:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
