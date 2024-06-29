@@ -34,8 +34,6 @@ This project is a Todo List Management System built using Node.js, Express.js, a
    npm start
 
 
-The server will run on http://localhost:3000 by default.
-
 
 ## API Endpoints
 
@@ -63,8 +61,12 @@ Downloads todos as a CSV file.
 GET /todos/filter?status=<status>
 Filters todos by status (pending or completed).
 
-Testing.
-Run tests using:npm test
+## Testing
+
+**Run tests using:**
+   ```bash
+   npm test
+   ```
 
 ## Dependencies
 

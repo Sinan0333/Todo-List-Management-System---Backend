@@ -1,16 +1,14 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
+const todoSchema = mongoose.Schema({
+  description: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    default: "pending",
+  },
+});
 
-const todoSchema=mongoose.Schema({
-    description:{
-        type:String,
-        required:true
-    },
-    status:{
-        type:String,
-        default:"pending"
-    },
-})
-
-
- export default mongoose.model("Todo",todoSchema)
+export default mongoose.model("Todo", todoSchema);
