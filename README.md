@@ -21,15 +21,22 @@ This project is a Todo List Management System built using Node.js, Express.js, a
    cd todo-list-management-system-backend
 Install dependencies:
 
-
+```bash
 npm install
+```
 Create a .env file in the root directory and add the following:
 
+```bash
+MONGO_URL
+PORT
+```
 
 Start the server using:
 
+```bash
+npm start.
+```
 
-npm start
 The server will run on http://localhost:3000 by default.
 
 API Endpoints
@@ -57,15 +64,14 @@ Downloads todos as a CSV file.
 GET /todos/filter?status=<status>
 Filters todos by status (pending or completed).
 
-Testing
-Run tests using:
-
-npm test
+Testing.
+Run tests using:npm test
 
 Dependencies
-Express.js: Web framework for Node.js
-MongoDB and Mongoose: Database and ODM for MongoDB
-Multer: Middleware for handling file uploads
-json2csv: Converts JSON data to CSV format
-dotenv: Loads environment variables from a .env file
-Jest: Testing framework
+
+Express.js: Web framework for Node.js.
+MongoDB and Mongoose: Database and ODM for MongoDB.
+Multer: Middleware for handling file uploads.
+json2csv: Converts JSON data to CSV format.
+dotenv: Loads environment variables from a .env file.
+Jest: Testing framework.
