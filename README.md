@@ -19,27 +19,26 @@ This project is a Todo List Management System built using Node.js, Express.js, a
    ```bash
    git clone <repository-url>
    cd todo-list-management-system-backend
-Install dependencies:
 
-```bash
-npm install
-```
-Create a .env file in the root directory and add the following:
+2. **Install dependencies:**
+   ```bash
+   npm install
 
-```bash
-MONGO_URL
-PORT
-```
+3. **Create a .env file in the root directory and add the following:**
+   ```bash
+   MONGO_URL
+   PORT
 
-Start the server using:
+4. **Start the server using:**
+   ```bash
+   npm start
 
-```bash
-npm start.
-```
 
 The server will run on http://localhost:3000 by default.
 
-API Endpoints
+
+## API Endpoints
+
 GET /todos
 Returns all todos.
 
@@ -67,7 +66,7 @@ Filters todos by status (pending or completed).
 Testing.
 Run tests using:npm test
 
-Dependencies
+## Dependencies
 
 Express.js: Web framework for Node.js.
 MongoDB and Mongoose: Database and ODM for MongoDB.
